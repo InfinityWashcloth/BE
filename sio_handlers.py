@@ -7,6 +7,7 @@ import socketio
 from aiohttp import web
 import random
 from audio_analysis import WavFile
+from mock_ml import get_predict
 
 sio = socketio.AsyncServer()
 app = web.Application()
@@ -67,5 +68,5 @@ def _get_audio_analysis(audio_data: numpy.array) -> float:
 
 def _get_ml_result_with_data(amplitude: numpy.array) -> typing.Tuple[numpy.array, float, float]:
     ts = time.time()
-    ml_results = _get_audio_analysis(amplitude)
+    ml_results = get_predict(amplitude)
     return amplitude, ts, ml_results
