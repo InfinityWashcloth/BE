@@ -59,11 +59,6 @@ async def get_analysed_data(sid):
         })
 
         print('Complete: get_analysed_data ok')
-        await sio.emit('update', result)
-
-
-def _get_audio_analysis(audio_data: numpy.array) -> float:
-    return random.randint(1, 10)
 
 
 def _get_ml_result_with_data(amplitude: numpy.array) -> typing.Tuple[numpy.array, float, float]:
