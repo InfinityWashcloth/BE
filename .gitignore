@@ -1,0 +1,6 @@
+venv/
+
+data/
+
+.idea/
+parse_wav.py
