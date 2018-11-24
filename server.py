@@ -41,7 +41,13 @@ def upload_file():
     if file.filename == '':
         raise ValueError('Bad file')
     filename = file.filename
-    file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+    fullpath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    file.save(fullpath)
+
+    for sid in sio_handlers.sessions_ctx.keys():
+        sio_handlers.sessions_ctx[sid].filename = fullpath
+        sio_handlers.sessions_ctx[sid].file = None
+
     return ''
 
 
