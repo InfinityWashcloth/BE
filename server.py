@@ -1,13 +1,14 @@
 import sio_handlers
 from sio_handlers import app, sio
-from aiohttp import web
+import socketio
+import eventlet
 
 
 @sio.on('connect')
-async def connect(sid, env):
+def connect(sid, env):
     print('new sess {}'.format(sid))
-    await sio_handlers.new_session(sid)
-    await sio_handlers.get_analysed_data(sid)
+    sio_handlers.new_session(sid)
+    sio_handlers.get_analysed_data(sid)
 
 
 # @sio.on('update')
@@ -16,9 +17,14 @@ async def connect(sid, env):
 
 
 @sio.on('disconnect')
-async def disconnect(sid):
+def disconnect(sid):
     print('disconnect')
     sio_handlers.sessions_ctx.__delitem__(sid)
 
 
-web.run_app(app)
+if __name__ == '__main__':
+    # wrap Flask application with socketio's middleware
+    app = socketio.Middleware(sio, app)
+
+    # deploy as an eventlet WSGI server
+    eventlet.wsgi.server(eventlet.listen(('', 8080)), app)

@@ -4,14 +4,14 @@ import typing
 from dataclasses import dataclass
 import numpy
 import socketio
-from aiohttp import web
-import random
 from audio_analysis import WavFile
 from mock_ml import get_predict
+from flask import Flask
 
-sio = socketio.AsyncServer()
-app = web.Application()
-sio.attach(app)
+sio = socketio.Server()
+app = Flask(__name__)
+
+# sio.attach(app)
 
 
 @dataclass
@@ -28,23 +28,23 @@ sessions_ctx: typing.Dict[str, SessionContext]
 sessions_ctx = {}
 
 
-async def new_session(sid):
+def new_session(sid):
     new_ctx = SessionContext(sid)
     sessions_ctx[new_ctx.id] = new_ctx
-    await sio.emit('id', new_ctx.id)
+    sio.emit('id', new_ctx.id)
 
 
-async def get_analysed_data(sid):
+def get_analysed_data(sid):
     print('Commence: get_analysed_data')
     session = sessions_ctx.get(sid, None)
     if session is None:
         print('Complete: get_analysed_data {}'.format(session))
-        await sio.emit('error', 'session not found')
+        sio.emit('error', 'session not found')
         return
 
     if session.filename is None:
         print('Complete: get_analysed_data file govno')
-        await sio.emit('error', json.dumps({'error': 'file not selected'}))
+        sio.emit('error', json.dumps({'error': 'file not selected'}))
         return
 
     for amplitude_chunk in WavFile(session.filename).get_splitted_audio():
@@ -57,6 +57,8 @@ async def get_analysed_data(sid):
             'ts': float(ts),
             'analysis_data': float(ml_results)
         })
+
+        sio.emit('update', result)
 
         print('Complete: get_analysed_data ok')
 
