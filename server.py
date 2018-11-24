@@ -1,9 +1,10 @@
 from flask import send_from_directory
-
+from flask import request
 import sio_handlers
 from sio_handlers import app, sio
 import socketio
 import eventlet
+import os
 
 
 @sio.on('connect')
@@ -27,6 +28,21 @@ def send_js(path):
 def disconnect(sid):
     print('disconnect')
     sio_handlers.sessions_ctx.__delitem__(sid)
+
+
+@app.route('/upload', methods=['POST'])
+def upload_file():
+    # check if the post request has the file part
+    if 'file' not in request.files:
+        raise ValueError('files not found')
+    file = request.files['file']
+    # if user does not select file, browser also
+    # submit an empty part without filename
+    if file.filename == '':
+        raise ValueError('Bad file')
+    filename = file.filename
+    file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+    return ''
 
 
 if __name__ == '__main__':

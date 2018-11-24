@@ -8,12 +8,14 @@ from audio_analysis import WavFile
 from mock_ml import get_predict
 from flask import Flask
 from flask_cors import CORS
-import eventlet
 
 sio = socketio.Server()
-app = Flask(__name__, static_url_path='/Users/koobcam/junction/FE')
+app = Flask(__name__, static_url_path='')
 CORS(app)
 
+UPLOAD_FOLDER = './data'
+ALLOWED_EXTENSIONS = set(['wav'])
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 # sio.attach(app)
 
@@ -26,7 +28,7 @@ class SessionContext:
 
     def __init__(self, sid):
         self.id = sid
-        self.filename = "/Users/koobcam/Desktop/device1_channel1_20181021155321.wav"
+        self.filename = "./data/device1_channel1_20181021155321.wav"
         self.file = None
 
 
@@ -53,10 +55,6 @@ def get_analysed_data(sid):
         sio.emit('error', json.dumps({'error': 'file not selected'}))
         return
 
-    result = {
-        'tupo': 'dich galimaya'
-    }
-
     if session.file is None:
         session.file = WavFile(session.filename)
 
@@ -67,14 +65,13 @@ def get_analysed_data(sid):
     print("type of chunk {0}".format(type(amplitude_chunk)))
     print("chunk {0}".format(amplitude_chunk))
 
-
     result = {
         'amplitude': new_l,
         'ts': float(ts),
         'analysis_data': float(ml_results)
     }
 
-    sio.emit('message', {'dima': 'genius'}, sid)
+    sio.emit('tupo dich galimaya', {'dima': 'genius'}, sid)
     sio.emit('message', result, sid)
     print("Client {0} uses {1}".format(sid, sio.transport(sid)))
 
