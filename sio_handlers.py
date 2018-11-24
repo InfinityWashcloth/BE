@@ -59,7 +59,7 @@ def get_analysed_data(sid):
         session.file = WavFile(session.filename)
 
     amplitude_chunk = session.file.get_average_amplitude()
-    amplitude, ts, ml_results = _get_ml_result_with_data(amplitude_chunk)
+    amplitude, ml_results = _get_ml_result_with_data(amplitude_chunk)
 
     # new_l = [float(i) for i in list(amplitude_chunk)]
     print("type of chunk {0}".format(type(amplitude_chunk)))
@@ -67,7 +67,7 @@ def get_analysed_data(sid):
 
     result = {
         'amplitude': float(amplitude_chunk),
-        'ts': float(ts),
+        'ts': float(session.file.offset),
         'analysis_data': float(ml_results)
     }
 
@@ -80,7 +80,6 @@ def get_analysed_data(sid):
 #  yield result
 
 
-def _get_ml_result_with_data(amplitude: numpy.array) -> typing.Tuple[numpy.array, float, float]:
-    ts = time.time()
+def _get_ml_result_with_data(amplitude: numpy.array) -> typing.Tuple[numpy.array, float]:
     ml_results = get_predict(amplitude)
-    return amplitude, ts, ml_results
+    return amplitude, ml_results
