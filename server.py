@@ -9,9 +9,7 @@ import os
 
 @sio.on('connect')
 def connect(sid, env):
-    print('new sess {}'.format(sid))
     sio_handlers.new_session(sid)
-    # sio_handlers.get_analysed_data(sid)
 
 
 @sio.on('update')
@@ -26,7 +24,6 @@ def send_js(path):
 
 @sio.on('disconnect')
 def disconnect(sid):
-    print('disconnect')
     sio_handlers.sessions_ctx.__delitem__(sid)
 
 
