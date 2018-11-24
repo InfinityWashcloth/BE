@@ -5,22 +5,27 @@ import numpy
 
 class WavFile(object):
 
-    def __init__(self, file_path):
-        self.file_name = file_path
-        self.amplitudes, self.frequency = librosa.load(file_path)
-        self.counter = 0
+    def __init__(self, file_path, offset=0.0, duration=None):
+        self.file_path = file_path
+        self.offset = offset
+        self.duration = duration
 
-    def get_splitted_audio(self, length_part=None) -> typing.Iterator[numpy.array]:
+    def load_file(self):
         try:
-            if length_part:
-                part_of_ampl = self.amplitudes[self.counter:length_part]
-                self.counter = length_part
+            self.amplitudes, self.frequency = librosa.load(self.file_path,
+                                                           offset=self.offset,
+                                                           duration=self.duration)
+            self.offset += self.duration
+            if len(self.amplitudes):
+                return True
             else:
-                part_of_ampl = self.amplitudes[self.counter:self.frequency]
-                self.counter += self.frequency
-            yield part_of_ampl
-        except Exception as e:
-            print('We have a problem for splitting file', e)
+                return False
+        except KeyboardInterrupt:
+            return False
+
+    def get_splitted_audio(self) -> typing.Iterator[numpy.array]:
+        while self.load_file():
+            yield self.amplitudes
 
     def get_beat_rate(self):
         return self.frequency
@@ -28,4 +33,3 @@ class WavFile(object):
     def get_duration_file(self):
         duration = librosa.get_duration(self.amplitudes)
         return duration
-
