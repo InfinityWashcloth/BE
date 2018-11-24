@@ -23,7 +23,11 @@ class WavFile(object):
         except KeyboardInterrupt:
             return False
 
-    def get_splitted_audio(self) -> typing.Iterator[numpy.array]:
+    def get_splitted_audio(self) -> numpy.array:
+        while self.load_file():
+            return self.amplitudes
+
+    def get_average_amplitude(self) -> float:
         while self.load_file():
             return numpy.average(self.amplitudes)
 
