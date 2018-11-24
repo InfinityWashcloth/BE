@@ -49,8 +49,10 @@ async def get_analysed_data(sid):
     for amplitude_chunk in WavFile(session.filename).get_splitted_audio():
         amplitude, ts, ml_results = _get_ml_result_with_data(amplitude_chunk)
 
+        new_l = [float(i) for i in amplitude_chunk]
+
         result = json.dumps({
-            'amplitude': list(amplitude_chunk),
+            'amplitude': new_l,
             'ts': float(ts),
             'analysis_data': float(ml_results)
         })
@@ -60,7 +62,7 @@ async def get_analysed_data(sid):
 
 
 def _get_audio_analysis(audio_data: numpy.array) -> float:
-    return random.randint(0.1, 10)
+    return random.randint(1, 10)
 
 
 def _get_ml_result_with_data(amplitude: numpy.array) -> typing.Tuple[numpy.array, float, float]:
