@@ -10,12 +10,12 @@ from flask import Flask
 from flask_cors import CORS
 
 sio = socketio.Server()
-app = Flask(__name__, static_url_path='')
-CORS(app)
+flask_app = Flask(__name__, static_url_path='')
+CORS(flask_app)
 
 UPLOAD_FOLDER = './data'
 ALLOWED_EXTENSIONS = set(['wav'])
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+flask_app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 # sio.attach(app)
 

@@ -1,7 +1,7 @@
 from flask import send_from_directory
-from flask import request
+from flask import request, redirect
 import sio_handlers
-from sio_handlers import app, sio
+from sio_handlers import flask_app, sio
 import socketio
 import eventlet
 import os
@@ -19,7 +19,7 @@ def start_analysis(sid):
     sio_handlers.get_analysed_data(sid)
 
 
-@app.route('/static/<path:path>')
+@flask_app.route('/static/<path:path>')
 def send_js(path):
     return send_from_directory('./static', path)
 
@@ -30,7 +30,7 @@ def disconnect(sid):
     sio_handlers.sessions_ctx.__delitem__(sid)
 
 
-@app.route('/upload', methods=['POST'])
+@flask_app.route('/upload', methods=['POST'])
 def upload_file():
     # check if the post request has the file part
     if 'file' not in request.files:
@@ -41,19 +41,19 @@ def upload_file():
     if file.filename == '':
         raise ValueError('Bad file')
     filename = file.filename
-    fullpath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    fullpath = os.path.join(flask_app.config['UPLOAD_FOLDER'], filename)
     file.save(fullpath)
 
     for sid in sio_handlers.sessions_ctx.keys():
         sio_handlers.sessions_ctx[sid].filename = fullpath
         sio_handlers.sessions_ctx[sid].file = None
 
-    return ''
+    return redirect('/static/index.html')
 
 
 if __name__ == '__main__':
     # wrap Flask application with socketio's middleware
-    app = socketio.Middleware(sio, app)
+    app = socketio.Middleware(sio, flask_app)
     # deploy as an eventlet WSGI server
     eventlet.wsgi.server(eventlet.listen(('', 8080)), app)
 
