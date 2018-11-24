@@ -20,7 +20,8 @@ class WavFile(object):
                 return True
             else:
                 return False
-        except KeyboardInterrupt:
+        except Exception:
+            self.amplitudes = []
             return False
 
     def get_splitted_audio(self) -> numpy.array:
