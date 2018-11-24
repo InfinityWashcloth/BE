@@ -5,7 +5,7 @@ import numpy
 
 class WavFile(object):
 
-    def __init__(self, file_path, offset=0.0, duration=30):
+    def __init__(self, file_path, offset=0.0, duration=1):
         self.file_path = file_path
         self.offset = offset
         self.duration = duration

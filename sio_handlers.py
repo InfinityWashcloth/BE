@@ -72,7 +72,7 @@ def get_analysed_data(sid):
     }
 
     sio.emit('tupo dich galimaya', {'dima': 'genius'}, sid)
-    sio.emit('message', result, sid)
+    sio.emit('update', result, sid)
     print("Client {0} uses {1}".format(sid, sio.transport(sid)))
 
 

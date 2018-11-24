@@ -14,8 +14,8 @@ def connect(sid, env):
     # sio_handlers.get_analysed_data(sid)
 
 
-@sio.on('start')
-def start_analysis(sid):
+@sio.on('update')
+def get_analysis(sid):
     sio_handlers.get_analysed_data(sid)
 
 
