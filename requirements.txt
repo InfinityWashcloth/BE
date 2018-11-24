@@ -32,3 +32,5 @@ WTForms==2.2.1
 aiohttp
 python-socketio
 eventlet
+flask-cors
+

@@ -25,7 +25,7 @@ class WavFile(object):
 
     def get_splitted_audio(self) -> typing.Iterator[numpy.array]:
         while self.load_file():
-            yield self.amplitudes
+            return self.amplitudes
 
     def get_beat_rate(self):
         return self.frequency
