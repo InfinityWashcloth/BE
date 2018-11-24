@@ -21,7 +21,7 @@ def start_analysis(sid):
 
 @app.route('/static/<path:path>')
 def send_js(path):
-    return send_from_directory('/Users/koobcam/junction/FE', path)
+    return send_from_directory('./static', path)
 
 
 @sio.on('disconnect')
