@@ -55,13 +55,15 @@ def get_analysed_data(sid):
     if session.file is None:
         session.file = WavFile(session.filename)
 
-    amplitude_chunk = session.file.get_average_amplitude()
+    average_amplitude = session.file.get_average_amplitude()
+
+    amplitude_chunk = session.file.get_splitted_audio()
     amplitude, ml_results = _get_ml_result_with_data(amplitude_chunk)
 
     # new_l = [float(i) for i in list(amplitude_chunk)]
 
     result = {
-        'amplitude': float(amplitude_chunk),
+        'amplitude': float(average_amplitude),
         'ts': float(session.file.offset),
         'analysis_data': float(ml_results)
     }
