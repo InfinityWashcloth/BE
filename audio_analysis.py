@@ -1,7 +1,6 @@
 import librosa
 import typing
 import numpy
-import os
 
 
 class WavFile(object):
@@ -12,13 +11,16 @@ class WavFile(object):
         self.counter = 0
 
     def get_splitted_audio(self, length_part=None) -> typing.Iterator[numpy.array]:
-        if length_part:
-            part_of_ampl = self.amplitudes[self.counter:length_part]
-            self.counter = length_part
-        else:
-            part_of_ampl = self.amplitudes[self.counter:self.frequency]
-            self.counter += self.frequency
-        yield part_of_ampl
+        try:
+            if length_part:
+                part_of_ampl = self.amplitudes[self.counter:length_part]
+                self.counter = length_part
+            else:
+                part_of_ampl = self.amplitudes[self.counter:self.frequency]
+                self.counter += self.frequency
+            yield part_of_ampl
+        except Exception as e:
+            print('We have a problem for splitting file', e)
 
     def get_beat_rate(self):
         return self.frequency
@@ -26,5 +28,4 @@ class WavFile(object):
     def get_duration_file(self):
         duration = librosa.get_duration(self.amplitudes)
         return duration
-
 
