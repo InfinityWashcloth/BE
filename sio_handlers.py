@@ -6,6 +6,7 @@ import typing
 from aiohttp import web
 import socketio
 import json
+from audio_analysis import WavFile
 
 
 sio = socketio.AsyncServer()
@@ -45,7 +46,7 @@ class StreamHandler:
             # todo not selected file
             return
 
-        for amplitude_chunk in self._get_splitted_file(session.filename):
+        for amplitude_chunk in WavFile(session.filename).get_splitted_audio():
             amplitude, ts, ml_results = self._get_ml_result_with_data(amplitude_chunk)
 
             result = json.dumps({
@@ -65,5 +66,3 @@ class StreamHandler:
         ml_results = self._get_audio_analysis(amplitude)
         return amplitude, ts, ml_results
 
-    def _get_splitted_file(self, filename: str) -> typing.Iterator[numpy.array]:
-        raise NotImplementedError
