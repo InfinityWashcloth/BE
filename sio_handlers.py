@@ -28,7 +28,7 @@ class SessionContext:
 
     def __init__(self, sid):
         self.id = sid
-        self.filename = "./data/device1_channel1_20181021155321.wav"
+        self.filename = "./data/test.wav"
         self.file = None
 
 
@@ -61,12 +61,12 @@ def get_analysed_data(sid):
     amplitude_chunk = session.file.get_splitted_audio()
     amplitude, ts, ml_results = _get_ml_result_with_data(amplitude_chunk)
 
-    new_l = [float(i) for i in list(amplitude_chunk)]
+    # new_l = [float(i) for i in list(amplitude_chunk)]
     print("type of chunk {0}".format(type(amplitude_chunk)))
     print("chunk {0}".format(amplitude_chunk))
 
     result = {
-        'amplitude': new_l,
+        'amplitude': float(amplitude_chunk),
         'ts': float(ts),
         'analysis_data': float(ml_results)
     }
