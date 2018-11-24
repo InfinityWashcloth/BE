@@ -43,15 +43,12 @@ def new_session(sid):
 
 
 def get_analysed_data(sid):
-    print('Commence: get_analysed_data')
     session = sessions_ctx.get(sid, None)
     if session is None:
-        print('Complete: get_analysed_data {}'.format(session))
         sio.emit('error', 'session not found')
         return
 
     if session.filename is None:
-        print('Complete: get_analysed_data file govno')
         sio.emit('error', json.dumps({'error': 'file not selected'}))
         return
 
@@ -62,8 +59,6 @@ def get_analysed_data(sid):
     amplitude, ml_results = _get_ml_result_with_data(amplitude_chunk)
 
     # new_l = [float(i) for i in list(amplitude_chunk)]
-    print("type of chunk {0}".format(type(amplitude_chunk)))
-    print("chunk {0}".format(amplitude_chunk))
 
     result = {
         'amplitude': float(amplitude_chunk),
@@ -73,7 +68,6 @@ def get_analysed_data(sid):
 
     sio.emit('tupo dich galimaya', {'dima': 'genius'}, sid)
     sio.emit('update', result, sid)
-    print("Client {0} uses {1}".format(sid, sio.transport(sid)))
 
 
 # sio.send(result, sid)
