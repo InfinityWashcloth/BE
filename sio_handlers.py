@@ -1,12 +1,11 @@
 import json
 import time
 import typing
-import uuid
 from dataclasses import dataclass
 import numpy
 import socketio
 from aiohttp import web
-
+import random
 from audio_analysis import WavFile
 
 sio = socketio.AsyncServer()
@@ -19,45 +18,49 @@ class SessionContext:
     id: str
     filename: str
 
-    def __init__(self):
-        self.id = uuid.uuid4().hex
-        self.filename = None
+    def __init__(self, sid):
+        self.id = sid
+        self.filename = "/Users/koobcam/Desktop/device1_channel1_20181021155321.wav"
 
 
 sessions_ctx: typing.Dict[str, SessionContext]
+sessions_ctx = {}
 
 
-def new_session():
-    new_ctx = SessionContext()
+async def new_session(sid):
+    new_ctx = SessionContext(sid)
     sessions_ctx[new_ctx.id] = new_ctx
-    sio.emit('id', new_ctx.id)
+    await sio.emit('id', new_ctx.id)
 
 
-def get_analysed_data(sid):
+async def get_analysed_data(sid):
+    print('Commence: get_analysed_data')
     session = sessions_ctx.get(sid, None)
-    if session in None:
-        sio.emit('session not found')
+    if session is None:
+        print('Complete: get_analysed_data {}'.format(session))
+        await sio.emit('error', 'session not found')
         return
 
     if session.filename is None:
-        sio.emit('error', 'file not selected')
+        print('Complete: get_analysed_data file govno')
+        await sio.emit('error', json.dumps({'error': 'file not selected'}))
         return
 
     for amplitude_chunk in WavFile(session.filename).get_splitted_audio():
         amplitude, ts, ml_results = _get_ml_result_with_data(amplitude_chunk)
 
         result = json.dumps({
-            'amplitude': amplitude_chunk,
-            'ts': ts,
-            'analysis_data': ml_results
+            'amplitude': list(amplitude_chunk),
+            'ts': float(ts),
+            'analysis_data': float(ml_results)
         })
 
-        sio.emit('update', result)
+        print('Complete: get_analysed_data ok')
+        await sio.emit('update', result)
 
 
 def _get_audio_analysis(audio_data: numpy.array) -> float:
-    # TODO send data for analysis to ML service
-    pass
+    return random.randint(0.1, 10)
 
 
 def _get_ml_result_with_data(amplitude: numpy.array) -> typing.Tuple[numpy.array, float, float]:
